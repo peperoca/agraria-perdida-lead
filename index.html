@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="H. Carga">
+<meta name="theme-color" content="#185FA5">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Pérdidas de Carga — Agraria</title>
+<style>
+:root{
+  --blue:#185FA5;--blue-d:#0c3d6e;--blue-l:#E6F1FB;--blue-m:#378ADD;
+  --orange:#d85a30;
+  --bg:#f2f1ec;--surface:#fff;--surface2:#f0efea;--surface3:#e4e3dc;
+  --bdr:rgba(0,0,0,.10);--bdr2:rgba(0,0,0,.20);
+  --tx:#1a1a18;--tx2:#5f5e5a;--tx3:#888780;
+  --r:10px;--rl:14px;
+  --sb:#EAF3DE;--st:#3B6D11;--wb:#FAEEDA;--wt:#854F0B;
+  --db:#FCEBEB;--dt:#A32D2D;--ib:#E6F1FB;--it:#185FA5;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1a1a18;--surface:#2c2c2a;--surface2:#363634;--surface3:#424240;
+  --bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.18);
+  --tx:#f0efea;--tx2:#b4b2a9;--tx3:#888780;
+  --blue-l:#042C53;
+  --sb:#173404;--st:#C0DD97;--wb:#412402;--wt:#FAC775;
+  --db:#501313;--dt:#F7C1C1;--ib:#042C53;--it:#B5D4F4;
+}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);font-size:15px;padding-bottom:calc(env(safe-area-inset-bottom,0px)+28px);}
+header{background:var(--blue);padding:calc(env(safe-area-inset-top,0px)+10px) 14px 12px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;}
+.hlogo-wrap{background:#fff;border-radius:10px;padding:5px 10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;height:52px;}
+.hlogo{height:40px;width:auto;max-width:150px;object-fit:contain;}
+.htitle{color:#fff;text-align:center;}
+.htitle h1{font-size:14px;font-weight:700;line-height:1.25;}
+.htitle p{font-size:10px;opacity:.7;margin-top:1px;}
+.hbtn{white-space:nowrap;background:#d85a30;color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.25);}
+.hbtn:active{background:#b84820;}
+.container{padding:14px;max-width:600px;margin:0 auto;}
+.card{background:var(--surface);border:.5px solid var(--bdr2);border-radius:var(--rl);padding:14px;margin-bottom:12px;}
+.sec{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.fld{display:flex;flex-direction:column;gap:3px;}
+.fld label{font-size:12px;color:var(--tx2);}
+.fld input,.fld select{height:38px;padding:0 10px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--surface2);color:var(--tx);font-size:14px;width:100%;}
+.fld input:focus,.fld select:focus{outline:2px solid var(--blue);outline-offset:1px;}
+.un{font-size:11px;color:var(--tx3);}
+.info-row{background:var(--ib);border-radius:var(--r);padding:10px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;}
+.il{font-size:11px;color:var(--it);opacity:.75;margin-bottom:2px;}
+.iv{font-size:16px;font-weight:600;color:var(--it);}
+.is{font-size:11px;color:var(--it);opacity:.7;}
+.nbadge{display:inline-block;background:var(--ib);color:var(--it);font-size:11px;padding:3px 9px;border-radius:6px;margin-top:6px;}
+.divider{border:none;border-top:.5px solid var(--bdr);margin:12px 0;}
+.tramo{border:.5px solid var(--bdr2);border-radius:var(--rl);background:var(--surface);margin-bottom:12px;overflow:hidden;}
+.thdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none;}
+.thdr:active{background:var(--surface2);}
+.tnum{font-size:14px;font-weight:600;color:var(--tx);}
+.tsum{font-size:12px;color:var(--tx3);margin-top:2px;}
+.tchev{font-size:16px;color:var(--tx3);transition:transform .2s;display:inline-block;}
+.tchev.open{transform:rotate(180deg);}
+.tbody{padding:0 14px 14px;}
+.fcard{background:var(--surface2);border:.5px solid var(--bdr);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;}
+.fhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.fnum{font-size:11px;font-weight:600;color:var(--tx3);background:var(--surface);border:.5px solid var(--bdr2);border-radius:6px;padding:2px 8px;}
+.brem{font-size:12px;color:var(--dt);background:var(--db);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;}
+.fbody{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;}
+.fbody select{height:36px;font-size:13px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--surface);color:var(--tx);padding:0 8px;width:100%;}
+.kbadge{font-size:11px;color:var(--it);background:var(--ib);border-radius:6px;padding:3px 8px;display:inline-block;margin-top:5px;}
+.qwrap{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:72px;}
+.qwrap label{font-size:11px;color:var(--tx2);}
+.qctrl{display:flex;align-items:center;border:.5px solid var(--bdr2);border-radius:var(--r);overflow:hidden;background:var(--surface);height:36px;}
+.qbtn{width:30px;height:100%;border:none;background:transparent;color:var(--tx2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qbtn:active{background:var(--surface2);}
+.qval{width:28px;text-align:center;font-size:15px;font-weight:600;color:var(--tx);}
+.badd{width:100%;margin-top:4px;padding:10px;background:var(--ib);color:var(--it);border:.5px solid rgba(24,95,165,.2);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;}
+.badd:active{opacity:.75;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.rcard{background:var(--surface2);border-radius:var(--r);padding:10px 12px;}
+.rcard.hi{background:var(--blue);}
+.rcard.hi .rl,.rcard.hi .rs{color:rgba(255,255,255,.65);}
+.rcard.hi .rv{color:#fff;}
+.rl{font-size:11px;color:var(--tx3);margin-bottom:2px;}
+.rv{font-size:20px;font-weight:600;color:var(--tx);line-height:1.1;}
+.rs{font-size:11px;color:var(--tx3);margin-top:2px;}
+.regime{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-top:3px;}
+.lam{background:var(--sb);color:var(--st);}
+.trans{background:var(--wb);color:var(--wt);}
+.turb{background:var(--db);color:var(--dt);}
+.bwrap{background:var(--surface3);border-radius:6px;height:16px;overflow:hidden;display:flex;margin:8px 0 4px;}
+.bpri{background:var(--blue);height:100%;transition:width .3s;}
+.bsec{background:var(--orange);height:100%;transition:width .3s;}
+.bleg{display:flex;gap:14px;font-size:11px;color:var(--tx2);}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:3px;vertical-align:middle;}
+.btn-ta{width:100%;padding:13px;background:var(--surface);color:var(--blue);border:1.5px dashed var(--blue-m);border-radius:var(--rl);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px;}
+.btn-ta:active{background:var(--blue-l);}
+.btn-dt{font-size:12px;color:var(--dt);background:var(--db);border:none;border-radius:6px;padding:5px 10px;cursor:pointer;}
+.stbl{width:100%;border-collapse:collapse;font-size:13px;}
+.stbl th{font-size:11px;font-weight:600;color:var(--tx3);text-align:left;padding:6px 8px;border-bottom:.5px solid var(--bdr2);}
+.stbl td{padding:7px 8px;border-bottom:.5px solid var(--bdr);color:var(--tx);}
+.stbl tr:last-child td{border-bottom:none;}
+.pcard{background:var(--surface2);border-radius:var(--r);padding:12px;}
+.pcard.hi{background:var(--blue);}
+.pcard.hi .rl,.pcard.hi .rs{color:rgba(255,255,255,.65);}
+.pcard.hi .rv{color:#fff;}
+#diag-wrap{overflow-x:auto;margin-top:4px;}
+.emsg{font-size:13px;color:var(--tx3);text-align:center;padding:16px 0;}
+.errmsg{font-size:13px;color:var(--dt);background:var(--db);border-radius:var(--r);padding:10px 14px;margin-top:8px;}
+/* action buttons */
+.action-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.abtn{flex:1;min-width:120px;padding:12px 10px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;}
+.abtn-save{background:var(--sb);color:var(--st);}
+.abtn-load{background:var(--ib);color:var(--it);}
+.abtn-print{background:var(--wb);color:var(--wt);}
+.abtn-email{background:#d85a30;color:#fff;}
+/* email modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal{background:var(--surface);border-radius:var(--rl);padding:20px;width:100%;max-width:400px;}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:12px;}
+.modal input{width:100%;height:40px;padding:0 12px;border:.5px solid var(--bdr2);border-radius:var(--r);background:var(--surface2);color:var(--tx);font-size:14px;margin-bottom:10px;}
+.modal-btns{display:flex;gap:8px;margin-top:6px;}
+.mbtn{flex:1;padding:10px;border-radius:var(--r);border:none;font-size:13px;font-weight:600;cursor:pointer;}
+.mbtn-ok{background:var(--blue);color:#fff;}
+.mbtn-cancel{background:var(--surface2);color:var(--tx2);}
+/* print */
+@media print{
+  header{position:fixed;top:0;left:0;right:0;z-index:999;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .hbtn{display:none!important;}
+  .btn-ta,.action-row,#saveload-card,.thdr button,.btn-dt,#lead-modal,#email-modal{display:none!important;}
+  body{background:#fff;color:#000;padding:0;margin:0;}
+  .container{max-width:100%;padding:8px;margin-top:80px;}
+  .card,.tramo{break-inside:avoid;border:1px solid #ccc!important;background:#fff!important;}
+  #diag-wrap{overflow:visible!important;}
+  .rcard,.pcard,.info-row{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hlogo-wrap"><img src="agraria-logo.png" class="hlogo" alt="Agraria"></div>
+  <div class="htitle">
+    <h1>Calculadora de Pérdidas Hidráulicas — AGRARIA</h1>
+    <p>Darcy-Weisbach · Colebrook-White</p>
+  </div>
+  <a href="https://www.agraria.com.uy" target="_blank" rel="noopener" class="hbtn">Presupuestá tu riego</a>
+</header>
+
+<div class="container">
+
+  <!-- PROJECT INFO -->
+  <div class="card" id="proj-card">
+    <div class="sec">Proyecto</div>
+    <div class="g2">
+      <div class="fld">
+        <label>Nombre del proyecto</label>
+        <input type="text" id="proj-name" placeholder="Ej: Sistema riego Establecimiento X" oninput="autoSave()">
+      </div>
+      <div class="fld">
+        <label>Presión mínima en punto de servicio</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="pmin-mca-in" value="0" min="0" step="1" inputmode="numeric"
+            oninput="render();autoSave()">
+          <span class="un" style="white-space:nowrap;">m c.a.</span>
+        </div>
+        <span class="un" id="pmin-bar-show" style="margin-top:2px;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE/LOAD -->
+  <div class="card" id="saveload-card">
+    <div class="sec">Guardar / Cargar</div>
+    <div class="action-row" style="margin-top:0;">
+      <button class="abtn abtn-save" onclick="saveData()">💾 Guardar</button>
+      <button class="abtn abtn-load" onclick="loadData()">📂 Cargar</button>
+      <button class="abtn" style="background:var(--db);color:var(--dt);" onclick="resetData()">🗑 Nuevo</button>
+      <button class="abtn abtn-print" onclick="requireLead('print')">🖨 Imprimir PDF</button>
+      <button class="abtn abtn-email" onclick="requireLead('email')">✉ Enviar por mail</button>
+    </div>
+    <p id="save-status" style="font-size:11px;color:var(--tx3);margin-top:8px;"></p>
+  </div>
+
+  <div id="tc"></div>
+  <button class="btn-ta" onclick="addTramo()">+ Agregar tramo</button>
+
+  <div class="card" id="sc" style="display:none;">
+    <div class="sec">Resumen por tramo</div>
+    <div style="overflow-x:auto;">
+      <table class="stbl">
+        <thead><tr>
+          <th>Tramo</th><th>Material</th><th>DN ext.</th><th>Largo</th>
+          <th>Caudal</th><th>Velocidad</th><th>H prim.</th><th>H sec.</th><th>H tramo</th><th>Desnivel</th>
+        </tr></thead>
+        <tbody id="stbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" id="dc" style="display:none;">
+    <div class="sec">Diagrama de la red</div>
+    <div id="diag-wrap"><div class="emsg">Completá al menos un tramo para ver el diagrama.</div></div>
+  </div>
+
+  <div class="card" id="pc" style="display:none;">
+    <div class="sec">Selección de bomba</div>
+    <div class="g2" style="margin-top:10px;">
+      <div class="pcard hi"><div class="rl">Pérdida por fricción</div><div class="rv" id="ph1">—</div><div class="rs">m c.a.</div></div>
+      <div class="pcard hi"><div class="rl">Pérdida por fricción</div><div class="rv" id="ph2">—</div><div class="rs">bar</div></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:var(--r);padding:10px 12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div class="rl">Desnivel total (suma de tramos)</div><div style="font-size:18px;font-weight:600;color:var(--tx);margin-top:2px;" id="ph-dz">0.00 m</div></div>
+      <span class="un" id="ph-dz-note" style="font-size:11px;text-align:right;max-width:140px;line-height:1.4;"></span>
+    </div>
+    <div style="background:var(--surface2);border-radius:var(--r);padding:10px 12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div class="rl">Presión mínima requerida en punto de servicio</div><div style="font-size:16px;font-weight:600;color:var(--tx);margin-top:2px;" id="ph-pmca">—</div></div>
+      <span id="ph-pbar" style="font-size:13px;font-weight:600;color:var(--it);"></span>
+    </div>
+    <div class="g2" style="margin-top:10px;">
+      <div class="pcard hi"><div class="rl">Carga mínima de la bomba *</div><div class="rv" id="ph3">—</div><div class="rs">m c.a.</div></div>
+      <div class="pcard"><div class="rl">Caudal Tramo 1</div><div class="rv" id="ph4">—</div><div class="rs" id="ph4u">—</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--tx3);margin-top:8px;line-height:1.5;">* Carga mínima = pérdidas de fricción + desnivel total + presión mínima en punto de servicio.</p>
+  </div>
+
+</div>
+
+<!-- LEAD CAPTURE MODAL -->
+<div id="lead-modal" class="modal-backdrop" style="display:none;">
+  <div class="modal">
+    <h3>Completá tus datos</h3>
+    <p style="font-size:12px;color:var(--tx2);margin-bottom:12px;line-height:1.5;">Para imprimir o enviar el informe, necesitamos algunos datos de contacto.</p>
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Nombre completo *</label>
+    <input type="text" id="lead-name" placeholder="Ej: Juan Pérez">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Empresa / Establecimiento</label>
+    <input type="text" id="lead-company" placeholder="Ej: Estancia La Magdalena">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Teléfono / WhatsApp *</label>
+    <input type="tel" id="lead-phone" placeholder="Ej: 099 123 456">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Correo electrónico *</label>
+    <input type="email" id="lead-email" placeholder="tu@correo.com">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Departamento / Ubicación</label>
+    <input type="text" id="lead-location" placeholder="Ej: San José">
+    <div id="lead-err" style="display:none;font-size:12px;color:var(--dt);margin:8px 0;"></div>
+    <div id="lead-progress" style="display:none;margin:8px 0;background:var(--ib);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--it);">Enviando datos...</div>
+    <p style="font-size:10px;color:var(--tx3);margin:8px 0 10px;line-height:1.5;">Tus datos se usan exclusivamente para contactarte sobre soluciones de riego. No los compartimos con terceros.</p>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="document.getElementById('lead-modal').style.display='none'">Cancelar</button>
+      <button class="mbtn mbtn-ok" id="btn-lead-submit" onclick="submitLead()">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div id="email-modal" class="modal-backdrop" style="display:none;">
+  <div class="modal">
+    <h3>Enviar informe por mail</h3>
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Tu dirección de correo</label>
+    <input type="email" id="mail-user" placeholder="tu@correo.com">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Mensaje adicional (opcional)</label>
+    <input type="text" id="mail-msg" placeholder="Ej: Consulta proyecto X">
+    <div id="pdf-progress" style="display:none;margin:10px 0;background:var(--ib);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--it);">
+      Generando PDF... por favor esperá.
+    </div>
+    <p style="font-size:11px;color:var(--tx3);margin:6px 0 10px;line-height:1.5;">
+      Se generará un PDF del cálculo y se descargará en tu dispositivo. Luego se abrirá tu cliente de correo — adjuntá el PDF descargado al mail.<br>
+      Una copia también se enviará a Agraria.
+    </p>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="document.getElementById('email-modal').style.display='none'">Cancelar</button>
+      <button class="mbtn mbtn-ok" id="btn-send-mail" onclick="sendEmail()">Generar PDF y Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const STEEL=[
+  {dn:'1/2"',de:21.25,e:2.4},{dn:'3/4"',de:26.75,e:2.4},
+  {dn:'1"',de:33.5,e:2.9},{dn:'1 1/4"',de:42.25,e:3.1},
+  {dn:'1 1/2"',de:48.25,e:3.1},{dn:'2"',de:60.0,e:3.3},
+  {dn:'2 1/2"',de:75.5,e:3.75},{dn:'3"',de:88.25,e:4.0},
+  {dn:'4"',de:113.5,e:4.25},{dn:'5"',de:139.0,e:4.5},
+  {dn:'6"',de:164.5,e:4.5}
+];
+const PVC={
+  32:{4:null,6:null,10:1.8},40:{4:null,6:1.8,10:2.0},
+  50:{4:null,6:1.8,10:2.4},63:{4:null,6:1.9,10:3.0},
+  75:{4:1.8,6:2.2,10:3.6},110:{4:2.2,6:3.2,10:5.3},
+  160:{4:3.2,6:4.7,10:7.7},200:{4:4.0,6:5.9,10:9.6},
+  250:{4:4.9,6:7.3,10:11.9},315:{4:6.2,6:9.2,10:15.0},
+  400:{4:7.9,6:11.7,10:19.1},500:{4:9.8,6:14.6,10:23.9},
+  630:{4:12.4,6:18.4,10:30.0}
+};
+const SDR_LIST=[
+  {sdr:41,p:4},{sdr:33,p:5},{sdr:26,p:6.3},{sdr:21,p:8},
+  {sdr:17.6,p:9.6},{sdr:17,p:10},{sdr:13.6,p:12.6},{sdr:11,p:16},{sdr:9,p:20}
+];
+const PE_RAW={
+  16:[null,null,null,null,null,null,null,null,2.0],
+  20:[null,null,null,null,null,null,null,2.0,2.3],
+  25:[null,null,null,null,null,null,2.0,2.3,2.8],
+  32:[null,null,null,null,null,2.0,2.4,3.0,3.6],
+  40:[null,null,null,2.0,2.3,2.4,3.0,3.7,4.5],
+  50:[null,null,2.0,2.4,2.9,3.0,3.7,4.6,5.6],
+  63:[null,2.0,2.5,3.0,3.6,3.8,4.7,5.8,7.1],
+  75:[2.0,2.3,2.9,3.6,4.3,4.5,5.6,6.8,8.4],
+  90:[2.2,2.8,3.5,4.3,5.1,5.4,6.7,8.2,10.1],
+  110:[2.7,3.4,4.2,5.3,6.3,6.6,8.1,10.0,12.3],
+  125:[3.1,3.9,4.8,6.0,7.1,7.4,9.2,11.4,14.0],
+  140:[3.5,4.3,5.4,6.7,8.0,8.3,10.3,12.7,15.7],
+  160:[4.0,4.9,6.2,7.7,9.1,9.5,11.8,14.6,17.9],
+  180:[4.4,5.5,6.9,8.6,10.2,10.7,13.3,16.4,20.1],
+  200:[4.9,6.2,7.7,9.6,11.4,11.9,14.7,18.2,22.4],
+  225:[5.5,6.9,8.6,10.8,12.8,13.4,16.6,20.5,25.2],
+  250:[6.2,7.7,9.6,11.9,14.2,14.8,18.4,22.7,27.9],
+  280:[6.9,8.6,10.7,13.4,15.9,16.6,20.6,25.4,31.3],
+  315:[7.7,9.7,12.1,15.0,17.9,18.7,23.2,28.6,35.2],
+  355:[8.7,10.9,13.6,16.9,20.1,21.1,26.1,32.2,39.7],
+  400:[9.8,12.3,15.3,19.1,22.7,23.7,29.4,36.3,44.7],
+  450:[11.0,13.8,17.2,21.5,25.5,26.7,33.1,40.9,50.3],
+  500:[12.3,15.3,19.1,23.9,28.3,29.7,36.8,45.4,55.8],
+  560:[13.7,17.2,21.4,26.7,31.7,33.2,41.2,50.8,null],
+  630:[15.4,19.3,24.1,30.0,35.7,37.4,46.3,57.2,null],
+  710:[17.4,21.8,27.2,33.9,40.2,42.1,52.2,null,null],
+  800:[19.6,24.5,30.6,38.1,45.3,47.4,58.8,null,null],
+  900:[22.0,27.6,34.4,42.9,51.0,53.3,null,null,null],
+  1000:[24.5,30.6,38.2,47.7,56.6,59.3,null,null,null],
+  1200:[29.4,36.7,45.9,57.2,null,null,null,null,null]
+};
+const FITS=[
+  {n:"Entrada de borde vivo",k:0.5},{n:"Entrada con borde redondeado",k:0.1},
+  {n:"Salida a depósito",k:1.0},{n:"Codo 90° radio estándar",k:0.9},
+  {n:"Codo 90° radio largo",k:0.45},{n:"Codo 45°",k:0.4},
+  {n:"Tee — flujo directo",k:0.2},{n:"Tee — flujo lateral",k:1.8},
+  {n:"Válvula de compuerta (abierta)",k:0.2},{n:"Válvula de globo (abierta)",k:10.0},
+  {n:"Válvula de retención swing",k:2.5},{n:"Válvula mariposa (abierta)",k:0.3},
+  {n:"Ensanchamiento brusco",k:1.0},{n:"Contracción brusca",k:0.5},
+  {n:"Medidor Venturi",k:0.15}
+];
+const QUNITS=[
+  {lb:"L/s",toMs:v=>v/1000},{lb:"L/min",toMs:v=>v/60000},
+  {lb:"L/h",toMs:v=>v/3600000},{lb:"m³/h",toMs:v=>v/3600}
+];
+const DEFAULT_EPS={acero:0.046,pvc:0.0015,pe:0.0015};
+const MAT_COLOR={
+  acero:{l:'#6B7280',d:'#9CA3AF'},
+  pvc:{l:'#3B6D11',d:'#86EFAC'},
+  pe:{l:'#185FA5',d:'#378ADD'}
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let tramos=[],nTid=1,nFid=1;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(function init(){
+  // Try auto-load
+  try{
+    const saved=localStorage.getItem('hcarga_autosave');
+    if(saved){ restoreState(JSON.parse(saved)); return; }
+  }catch(e){}
+  addTramo();
+})();
+
+function mkTramo(prev){
+  const mat=prev?prev.mat:'pe';
+  return{id:nTid++,open:true,mat,
+    si:prev?prev.si:0,pDn:prev?prev.pDn:75,pPn:prev?prev.pPn:10,
+    eDn:prev?prev.eDn:110,eSi:prev?prev.eSi:4,
+    eps:prev?prev.eps:DEFAULT_EPS[mat],
+    largo:prev?prev.largo:100,dz:0,
+    caudal:prev?prev.caudal:10,qu:prev?prev.qu:3,
+    fits:[],res:null};
+}
+
+function addTramo(){tramos.push(mkTramo(tramos.length?tramos[tramos.length-1]:null));render();}
+function delTramo(id){if(tramos.length<=1)return;tramos=tramos.filter(t=>t.id!==id);render();}
+function togTramo(id){const t=tramos.find(t=>t.id===id);if(t)t.open=!t.open;render();}
+function addFit(tid){const t=tramos.find(t=>t.id===tid);if(t)t.fits.push({id:nFid++,fi:0,qty:1});render();}
+function delFit(tid,fid){const t=tramos.find(t=>t.id===tid);if(t)t.fits=t.fits.filter(f=>f.id!==fid);render();}
+function chQty(tid,fid,d){const t=tramos.find(t=>t.id===tid);if(!t)return;const f=t.fits.find(f=>f.id===fid);if(f)f.qty=Math.max(1,Math.min(99,f.qty+d));render();}
+function chFi(tid,fid,v){const t=tramos.find(t=>t.id===tid);if(!t)return;const f=t.fits.find(f=>f.id===fid);if(f)f.fi=parseInt(v);render();}
+function sv(id,k,v){const t=tramos.find(t=>t.id===id);if(t)t[k]=v;render();}
+function svMat(id,mat){const t=tramos.find(t=>t.id===id);if(t){t.mat=mat;t.eps=DEFAULT_EPS[mat];}render();}
+
+// ─── PIPE GETTERS ─────────────────────────────────────────────────────────────
+function getPipe(t){
+  if(t.mat==='acero'){const s=STEEL[t.si];return{de:s.de,e:s.e,di:s.de-2*s.e};}
+  if(t.mat==='pvc'){const dn=t.pDn,pn=t.pPn,e=PVC[dn]?PVC[dn][pn]:null;if(!e)return null;return{de:dn,e,di:dn-2*e};}
+  const dn=t.eDn,row=PE_RAW[dn],e=row?row[t.eSi]:null;if(!e)return null;return{de:dn,e,di:dn-2*e};
+}
+
+// ─── HYDRAULICS ───────────────────────────────────────────────────────────────
+function darcy(Re,eD){
+  if(Re<2300)return 64/Re;
+  let f=0.02;
+  for(let i=0;i<60;i++){const fn=Math.pow(-2*Math.log10(eD/3.71+2.51/(Re*Math.sqrt(f))),-2);if(Math.abs(fn-f)<1e-10)return fn;f=fn;}
+  return f;
+}
+function calcT(t){
+  const p=getPipe(t);if(!p)return null;
+  const Q=QUNITS[t.qu].toMs(t.caudal),D=p.di/1000;
+  if(D<=0||Q<=0||t.largo<=0)return null;
+  const A=Math.PI*D*D/4,V=Q/A,nu=1.004e-6,Re=V*D/nu;
+  const eps=(t.eps||DEFAULT_EPS[t.mat])/1000,eD=eps/D,f=darcy(Re,eD),g=9.81;
+  const hf=f*(t.largo/D)*(V*V)/(2*g);
+  const Ks=t.fits.reduce((s,r)=>s+FITS[r.fi].k*r.qty,0);
+  const hm=Ks*(V*V)/(2*g),ht=hf+hm;
+  const reg=Re<2300?['Laminar','lam']:Re<4000?['Transición','trans']:['Turbulento','turb'];
+  const pp=ht>0?(hf/ht*100):100,ps=ht>0?(hm/ht*100):0;
+  return{p,V,Re,f,eD,hf,hm,ht,reg,pp,ps};
+}
+
+function getPminMca(){return parseFloat(document.getElementById('pmin-mca-in').value)||0;}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render(){
+  tramos.forEach(t=>{t.res=calcT(t);});
+  document.getElementById('tc').innerHTML=tramos.map(rT).join('');
+  updSum();updDiag();updPump();
+  // update pmin display
+  const pmin=getPminMca();
+  document.getElementById('pmin-bar-show').textContent=pmin>0?`= ${(pmin/10.197).toFixed(2)} bar`:'';
+  autoSave();
+}
+
+function rT(t){
+  const r=t.res;
+  const sum=r?`${r.V.toFixed(2)} m/s · ${r.ht.toFixed(3)} m c.a.`:'Completá los datos';
+  return`<div class="tramo">
+  <div class="thdr" onclick="togTramo(${t.id})">
+    <div><div class="tnum">Tramo ${tramos.indexOf(t)+1}</div><div class="tsum">${sum}</div></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      ${tramos.length>1?`<button class="btn-dt" onclick="event.stopPropagation();delTramo(${t.id})">Eliminar</button>`:''}
+      <span class="tchev ${t.open?'open':''}">▾</span>
+    </div>
+  </div>
+  ${t.open?`<div class="tbody">${rPipe(t)}<div class="divider"></div>${rLC(t)}<div class="divider"></div><div class="sec">Accesorios</div>${rFits(t)}${rRes(t)}</div>`:''}
+</div>`;
+}
+
+function rPipe(t){
+  const mat=t.mat,eps=t.eps!=null?t.eps:DEFAULT_EPS[mat];
+  let sel='',info='';
+  if(mat==='acero'){
+    const s=STEEL[t.si];
+    sel=`<div class="fld"><label>Diámetro nominal</label>
+      <select onchange="sv(${t.id},'si',parseInt(this.value))">
+        ${STEEL.map((s,i)=>`<option value="${i}" ${i===t.si?'selected':''}>${s.dn}</option>`).join('')}
+      </select></div>`;
+    info=`<div class="info-row">
+      <div><div class="il">D. exterior</div><div class="iv">${s.de.toFixed(1)}</div><div class="is">mm</div></div>
+      <div><div class="il">Espesor</div><div class="iv">${s.e}</div><div class="is">mm</div></div>
+      <div><div class="il">D. interior</div><div class="iv">${(s.de-2*s.e).toFixed(1)}</div><div class="is">mm</div></div>
+    </div><span class="nbadge">Norma UNIT 134-69 · 20 kg/cm²</span>`;
+  } else if(mat==='pvc'){
+    const dns=Object.keys(PVC).map(Number),dn=t.pDn,pns=[4,6,10];
+    const avPn=pns.filter(p=>PVC[dn]&&PVC[dn][p]!=null);
+    const pn=avPn.includes(t.pPn)?t.pPn:avPn[avPn.length-1]||10;
+    const e=PVC[dn]?PVC[dn][pn]:null;
+    sel=`<div class="g2">
+      <div class="fld"><label>Diámetro nominal (mm)</label>
+        <select onchange="sv(${t.id},'pDn',parseInt(this.value))">
+          ${dns.map(d=>`<option value="${d}" ${d===dn?'selected':''}>${d}</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Presión nominal</label>
+        <select onchange="sv(${t.id},'pPn',parseInt(this.value))">
+          ${pns.map(p=>`<option value="${p}" ${p===pn?'selected':''} ${!avPn.includes(p)?'disabled':''}>PN ${p}${!avPn.includes(p)?' (n/d)':''}</option>`).join('')}
+        </select></div>
+    </div>`;
+    info=e?`<div class="info-row">
+      <div><div class="il">D. exterior</div><div class="iv">${dn}</div><div class="is">mm</div></div>
+      <div><div class="il">Espesor</div><div class="iv">${e}</div><div class="is">mm</div></div>
+      <div><div class="il">D. interior</div><div class="iv">${(dn-2*e).toFixed(1)}</div><div class="is">mm</div></div>
+    </div>`:`<div class="errmsg">Combinación DN/PN no disponible.</div>`;
+  } else {
+    const dns=Object.keys(PE_RAW).map(Number),dn=t.eDn,row=PE_RAW[dn]||[];
+    const avSi=SDR_LIST.map((_,i)=>i).filter(i=>row[i]!=null);
+    const si=avSi.includes(t.eSi)?t.eSi:(avSi[0]??4);
+    const e=row[si];
+    sel=`<div class="g2">
+      <div class="fld"><label>Diámetro nominal exterior (mm)</label>
+        <select onchange="sv(${t.id},'eDn',parseInt(this.value))">
+          ${dns.map(d=>`<option value="${d}" ${d===dn?'selected':''}>${d}</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Presión nominal (kg/cm²)</label>
+        <select onchange="sv(${t.id},'eSi',parseInt(this.value))">
+          ${SDR_LIST.map((s,i)=>{const av=row[i]!=null;return`<option value="${i}" ${i===si?'selected':''} ${!av?'disabled':''}>${s.p} kg/cm² — SDR ${s.sdr}${!av?' (n/d)':''}</option>`;}).join('')}
+        </select></div>
+    </div>`;
+    info=e!=null?`<div class="info-row">
+      <div><div class="il">D. exterior</div><div class="iv">${dn}</div><div class="is">mm</div></div>
+      <div><div class="il">Espesor</div><div class="iv">${e}</div><div class="is">mm</div></div>
+      <div><div class="il">D. interior</div><div class="iv">${(dn-2*e).toFixed(1)}</div><div class="is">mm</div></div>
+    </div>`:`<div class="errmsg">Combinación DN/PN no disponible.</div>`;
+  }
+  return`<div class="sec">Tubería</div>
+  <div class="fld" style="margin-bottom:10px;">
+    <label>Material</label>
+    <select onchange="svMat(${t.id},this.value)">
+      <option value="pe" ${mat==='pe'?'selected':''}>Polietileno</option>
+      <option value="pvc" ${mat==='pvc'?'selected':''}>PVC</option>
+      <option value="acero" ${mat==='acero'?'selected':''}>Acero (UNIT 134-69)</option>
+    </select>
+  </div>${sel}${info}
+  <div class="fld" style="margin-top:10px;">
+    <label>Rugosidad absoluta (ε) — típica ${mat==='acero'?'0.046 mm':mat==='pvc'?'0.0015 mm':'0.0015 mm'}</label>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input type="number" value="${eps}" min="0.0001" step="0.001" inputmode="decimal" style="flex:1;"
+        onchange="sv(${t.id},'eps',parseFloat(this.value)||${DEFAULT_EPS[mat]})">
+      <span class="un">mm</span>
+    </div>
+  </div>`;
+}
+
+function rLC(t){
+  const dz=t.dz||0;
+  const dzSign=dz>0?'↑ Sube: +':dz<0?'↓ Baja: ':'';
+  const dzColor=dz>0?'var(--dt)':dz<0?'var(--st)':'var(--tx3)';
+  const dzNote=dz!==0?`<span style="font-size:12px;font-weight:600;color:${dzColor};white-space:nowrap;">${dzSign}${dz} m</span>`:'';
+  return`<div class="sec">Caudal, longitud y desnivel</div>
+  <div class="g3">
+    <div class="fld"><label>Longitud</label>
+      <input type="number" value="${t.largo}" min="0.1" step="1" inputmode="decimal"
+        onchange="sv(${t.id},'largo',parseFloat(this.value)||0)">
+      <span class="un">m</span></div>
+    <div class="fld"><label>Caudal</label>
+      <input type="number" value="${t.caudal}" min="0.001" step="0.1" inputmode="decimal"
+        onchange="sv(${t.id},'caudal',parseFloat(this.value)||0)"></div>
+    <div class="fld"><label>Unidad</label>
+      <select onchange="sv(${t.id},'qu',parseInt(this.value))">
+        ${QUNITS.map((u,i)=>`<option value="${i}" ${i===t.qu?'selected':''}>${u.lb}</option>`).join('')}
+      </select></div>
+  </div>
+  <div class="fld" style="margin-top:10px;">
+    <label>Dif. de altura fin−inicio (+ sube, − baja)</label>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input type="number" value="${dz}" step="0.1" inputmode="decimal" style="flex:1;"
+        onchange="sv(${t.id},'dz',parseFloat(this.value)||0)">
+      <span class="un">m</span>${dzNote}
+    </div>
+  </div>`;
+}
+
+function rFits(t){
+  let h='';
+  if(!t.fits.length) h='<p style="font-size:13px;color:var(--tx3);margin-bottom:8px;">Sin accesorios.</p>';
+  else h=t.fits.map((f,i)=>`<div class="fcard">
+    <div class="fhdr"><span class="fnum">Accesorio ${i+1}</span><button class="brem" onclick="delFit(${t.id},${f.id})">✕ Eliminar</button></div>
+    <div class="fbody">
+      <div>
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Tipo de accesorio</label>
+        <select onchange="chFi(${t.id},${f.id},this.value)">
+          ${FITS.map((fi,idx)=>`<option value="${idx}" ${idx===f.fi?'selected':''}>${fi.n}</option>`).join('')}
+        </select>
+        <span class="kbadge">K = ${FITS[f.fi].k}</span>
+      </div>
+      <div class="qwrap">
+        <label>Cantidad</label>
+        <div class="qctrl">
+          <button class="qbtn" onclick="chQty(${t.id},${f.id},-1)">−</button>
+          <span class="qval">${f.qty}</span>
+          <button class="qbtn" onclick="chQty(${t.id},${f.id},+1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>`).join('');
+  return h+`<button class="badd" onclick="addFit(${t.id})">+ Agregar accesorio</button>`;
+}
+
+function rRes(t){
+  const r=t.res;if(!r)return'';
+  return`<div class="divider"></div>
+  <div class="sec">Resultados del tramo</div>
+  <div class="rgrid">
+    <div class="rcard hi"><div class="rl">Pérdida total</div><div class="rv">${r.ht.toFixed(3)}</div><div class="rs">m c.a.</div></div>
+    <div class="rcard hi"><div class="rl">Presión perdida</div><div class="rv">${(r.ht*0.0981).toFixed(4)}</div><div class="rs">bar</div></div>
+    <div class="rcard"><div class="rl">Pérd. primaria</div><div class="rv">${r.hf.toFixed(3)}</div><div class="rs">m c.a.</div></div>
+    <div class="rcard"><div class="rl">Pérd. secundaria</div><div class="rv">${r.hm.toFixed(3)}</div><div class="rs">m c.a.</div></div>
+    <div class="rcard"><div class="rl">Velocidad</div><div class="rv">${r.V.toFixed(3)}</div><div class="rs">m/s</div></div>
+    <div class="rcard"><div class="rl">Reynolds</div><div class="rv">${r.Re<1e6?Math.round(r.Re):r.Re.toExponential(2)}</div><div class="rs"><span class="regime ${r.reg[1]}">${r.reg[0]}</span></div></div>
+  </div>
+  <div style="margin-top:10px;">
+    <div class="bwrap"><div class="bpri" style="width:${r.pp.toFixed(1)}%"></div><div class="bsec" style="width:${r.ps.toFixed(1)}%"></div></div>
+    <div class="bleg">
+      <span><span class="dot" style="background:var(--blue);"></span>Primarias ${r.pp.toFixed(1)}%</span>
+      <span><span class="dot" style="background:var(--orange);"></span>Secundarias ${r.ps.toFixed(1)}%</span>
+    </div>
+  </div>`;
+}
+
+// ─── SUMMARY ─────────────────────────────────────────────────────────────────
+function updSum(){
+  const v=tramos.filter(t=>t.res);
+  const sc=document.getElementById('sc');
+  if(!v.length){sc.style.display='none';return;}
+  sc.style.display='block';
+  const ML={acero:'Acero',pvc:'PVC',pe:'Polietileno'};
+  const rows=v.map(t=>{
+    const r=t.res,q=`${t.caudal} ${QUNITS[t.qu].lb}`;
+    const dz=t.dz||0;const dzStr=dz>0?`↑ +${dz}m`:dz<0?`↓ ${dz}m`:'0 m';
+    return`<tr>
+      <td><strong>Tramo ${tramos.indexOf(t)+1}</strong></td>
+      <td>${ML[t.mat]}</td><td>${r.p.de} mm</td><td>${t.largo} m</td>
+      <td>${q}</td><td>${r.V.toFixed(3)} m/s</td>
+      <td>${r.hf.toFixed(3)} m</td><td>${r.hm.toFixed(3)} m</td>
+      <td><strong>${r.ht.toFixed(3)} m</strong></td><td>${dzStr}</td>
+    </tr>`;
+  }).join('');
+  const totHf=v.reduce((s,t)=>s+t.res.hf,0),totHm=v.reduce((s,t)=>s+t.res.hm,0);
+  const totHt=v.reduce((s,t)=>s+t.res.ht,0),totL=v.reduce((s,t)=>s+t.largo,0);
+  const totDz=tramos.reduce((s,t)=>s+(t.dz||0),0);
+  const totRow=`<tr style="border-top:1.5px solid var(--bdr2);background:var(--surface2);">
+    <td colspan="3"><strong>TOTAL</strong></td>
+    <td><strong>${totL} m</strong></td><td colspan="2">—</td>
+    <td><strong>${totHf.toFixed(3)} m</strong></td><td><strong>${totHm.toFixed(3)} m</strong></td>
+    <td><strong>${totHt.toFixed(3)} m</strong></td>
+    <td><strong>${totDz>=0?'+':''}${totDz.toFixed(2)} m</strong></td>
+  </tr>`;
+  document.getElementById('stbody').innerHTML=rows+totRow;
+}
+
+// ─── PUMP ────────────────────────────────────────────────────────────────────
+function updPump(){
+  const v=tramos.filter(t=>t.res);
+  const pc=document.getElementById('pc');
+  if(!v.length){pc.style.display='none';return;}
+  pc.style.display='block';
+  const totalHt=v.reduce((s,t)=>s+t.res.ht,0);
+  const totalDz=tramos.reduce((s,t)=>s+(t.dz||0),0);
+  const pmin=getPminMca();
+  const Hmin=totalHt+totalDz+pmin;
+  document.getElementById('ph1').textContent=totalHt.toFixed(3);
+  document.getElementById('ph2').textContent=(totalHt*0.0981).toFixed(4);
+  document.getElementById('ph3').textContent=Hmin.toFixed(3);
+  const dzEl=document.getElementById('ph-dz');
+  dzEl.textContent=`${totalDz>=0?'+':''}${totalDz.toFixed(2)} m`;
+  dzEl.style.color=totalDz>0?'var(--dt)':totalDz<0?'var(--st)':'var(--tx)';
+  document.getElementById('ph-dz-note').textContent=totalDz>0?'↑ sube: suma carga':totalDz<0?'↓ baja: reduce carga':'sin desnivel neto';
+  const pmca=document.getElementById('ph-pmca');
+  const pbarEl=document.getElementById('ph-pbar');
+  const pminBar=pmin/10.197;
+  pmca.textContent=pmin>0?`${pmin} m c.a.`:'0 m c.a. (sin presión mínima)';
+  pbarEl.textContent=pmin>0?`${pminBar.toFixed(2)} bar`:'';
+  const t1=tramos[0];
+  document.getElementById('ph4').textContent=t1.caudal;
+  document.getElementById('ph4u').textContent=QUNITS[t1.qu].lb;
+}
+
+// ─── DIAGRAM ─────────────────────────────────────────────────────────────────
+function updDiag(){
+  const v=tramos.filter(t=>t.res);
+  const dc=document.getElementById('dc'),dw=document.getElementById('diag-wrap');
+  if(!v.length){dc.style.display='none';return;}
+  dc.style.display='block';
+  const dk=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const C={
+    tx:dk?'#f0efea':'#1a1a18',sub:dk?'#888780':'#5f5e5a',
+    tot:'#d85a30',totTx:dk?'#f7c1c1':'#a32d2d',
+    arIn:'#3B6D11',arOut:'#A32D2D',
+    dnTx:dk?'#e0e0e0':'#222',
+    pump:dk?'#f0efea':'#1a1a18',pumpFill:dk?'#2c2c2a':'#fff',
+    hdispA:'#185FA5',hdispBgA:dk?'#042C53':'#dbeafe',
+    hdispB:'#854F0B',hdispBgB:dk?'#412402':'#fef3c7'
+  };
+  const matPipe=t=>dk?MAT_COLOR[t.mat].d:MAT_COLOR[t.mat].l;
+  const totalHt=v.reduce((s,t)=>s+t.res.ht,0);
+  const totalDz=tramos.reduce((s,t)=>s+(t.dz||0),0);
+  const pmin=getPminMca();
+  const Hmin=totalHt+totalDz+pmin;
+  const t1=tramos[0];
+  const q1Lbl=`${t1.caudal} ${QUNITS[t1.qu].lb}`;
+
+  // Geometry — all lengths in SVG units
+  const totL=v.reduce((s,t)=>s+t.largo,0)||1;
+  const maxDe=Math.max(...v.map(t=>t.res.p.de));
+  const minDe=Math.min(...v.map(t=>t.res.p.de));
+  const deRange=maxDe-minDe||1;
+  const maxPH=30;
+  const pumpR=22,pumpGap=14,pumpZone=pumpR*2+pumpGap+8;
+  const pL=8;
+  // Vertical layout: top labels take 90px, pipe sits at pYcenter
+  // below pipe: 20px for DN label, then 2 rows of Hdisp (22px each), total ~64px below
+  // derivation arrows go 60px above (entering) or 60px below (exiting)
+  // So total H = 90 (above text) + 30 (pipe max) + 80 (below) = 200+margin
+  const ABOVE=100; // px above pipe centerline for text
+  const BELOW=110; // px below pipe centerline for Hdisp rows
+  const H=ABOVE+maxPH+BELOW+30;
+  const pYcenter=ABOVE+maxPH/2;
+
+  const availW=Math.max(Math.min(window.innerWidth,600)-40,v.length*110);
+  const totalSegW=availW-60-pumpZone;
+  const rawW=v.map(t=>(t.largo/totL)*totalSegW);
+  const clamped=rawW.map(w=>Math.max(w,80));
+  const sc2=totalSegW/clamped.reduce((a,b)=>a+b,0);
+  const sw=clamped.map(w=>Math.round(w*sc2));
+  const pipeStart=pL+pumpZone;
+  const W=pipeStart+sw.reduce((a,b)=>a+b,0)+36;
+  const pumpCx=pL+pumpR+2,pumpCy=pYcenter;
+  // Hdisp stagger rows — placed well below the pipe
+  const hdRowA=pYcenter+maxPH/2+22;
+  const hdRowB=pYcenter+maxPH/2+44;
+
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif;display:block;">`;
+  svg+=`<defs>
+    <marker id="tri-dn" markerWidth="8" markerHeight="7" refX="4" refY="0" orient="auto">
+      <polygon points="0 0,8 0,4 7" fill="${C.arIn}"/>
+    </marker>
+    <marker id="tri-up" markerWidth="8" markerHeight="7" refX="4" refY="7" orient="auto">
+      <polygon points="0 7,8 7,4 0" fill="${C.arOut}"/>
+    </marker>
+    <marker id="ap" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <polygon points="0 0,8 4,0 8" fill="${C.pump}"/>
+    </marker>
+  </defs>`;
+
+  // ── PUMP SYMBOL ──
+  svg+=`<circle cx="${pumpCx}" cy="${pumpCy}" r="${pumpR}" fill="${C.pumpFill}" stroke="${C.pump}" stroke-width="2"/>`;
+  const tx1=pumpCx-pumpR*.55,ty1=pumpCy-pumpR*.6,tx2=pumpCx-pumpR*.55,ty2=pumpCy+pumpR*.6,tx3=pumpCx+pumpR*.65,ty3=pumpCy;
+  svg+=`<polygon points="${tx1},${ty1} ${tx2},${ty2} ${tx3},${ty3}" fill="${C.pump}" opacity=".8"/>`;
+  svg+=`<line x1="${pumpCx+pumpR}" y1="${pumpCy}" x2="${pipeStart}" y2="${pumpCy}" stroke="${C.pump}" stroke-width="2" marker-end="url(#ap)"/>`;
+  svg+=`<text x="${pumpCx}" y="${pumpCy-pumpR-20}" text-anchor="middle" font-size="10" font-weight="700" fill="${C.tx}">H= ${Hmin.toFixed(2)} m</text>`;
+  svg+=`<text x="${pumpCx}" y="${pumpCy-pumpR-8}" text-anchor="middle" font-size="10" fill="${C.sub}">Q= ${q1Lbl}</text>`;
+
+  // ── PIPES ──
+  let cx=pipeStart;
+  const jxArr=[];
+  let cumEnergy=0;
+
+  v.forEach((t,i)=>{
+    const r=t.res,segW=sw[i],x0=cx,xm=x0+segW/2;
+    const pH=maxDe===minDe?18:Math.round(8+((r.p.de-minDe)/deRange)*22);
+    const pY=pYcenter-Math.round(pH/2);
+    const pBot=pY+pH;
+    const col=matPipe(t);
+    const tidx=tramos.indexOf(t)+1;
+
+    // pipe body
+    svg+=`<rect x="${x0}" y="${pY}" width="${segW}" height="${pH}" rx="${Math.max(3,Math.round(pH/5))}" fill="${col}"/>`;
+
+    // LABELS ABOVE PIPE — spaced out generously
+    const y1=pY-78,y2=pY-64,y3=pY-50,y4=pY-36,y5=pY-22;
+    svg+=`<text x="${xm}" y="${y1}" text-anchor="middle" font-size="11" font-weight="700" fill="${C.tx}">Tramo ${tidx}</text>`;
+    svg+=`<text x="${xm}" y="${y2}" text-anchor="middle" font-size="10" fill="${C.sub}">DN ${r.p.de} mm · ${t.largo} m</text>`;
+    svg+=`<text x="${xm}" y="${y3}" text-anchor="middle" font-size="10" fill="${C.sub}">${t.caudal} ${QUNITS[t.qu].lb} · v=${r.V.toFixed(2)} m/s</text>`;
+    const dz=t.dz||0;
+    if(dz!==0){
+      const dzCol=dz>0?C.arOut:C.arIn;
+      svg+=`<text x="${xm}" y="${y4}" text-anchor="middle" font-size="10" fill="${dzCol}" font-weight="600">${dz>0?'↑ +':'↓ '}${dz} m</text>`;
+      svg+=`<text x="${xm}" y="${y5}" text-anchor="middle" font-size="10" fill="${C.totTx}" font-weight="600">−${r.ht.toFixed(3)} m c.a.</text>`;
+    } else {
+      svg+=`<text x="${xm}" y="${y4}" text-anchor="middle" font-size="10" fill="${C.totTx}" font-weight="600">−${r.ht.toFixed(3)} m c.a.</text>`;
+    }
+    // DN inside or below
+    if(segW>55&&pH>13){
+      svg+=`<text x="${xm}" y="${pY+Math.round(pH/2)+4}" text-anchor="middle" font-size="10" fill="#fff" font-weight="600">${r.p.de} mm</text>`;
+    } else {
+      svg+=`<text x="${xm}" y="${pBot+13}" text-anchor="middle" font-size="10" fill="${C.dnTx}" font-weight="600">${r.p.de} mm</text>`;
+    }
+    cumEnergy+=r.ht+(t.dz||0);
+    jxArr.push({jx:x0+segW,pY,pBot,cumEnergy,idx:i});
+    cx+=segW;
+  });
+
+  // ── HDISP AT EVERY JUNCTION AND FINAL POINT ──
+  jxArr.forEach(({jx,cumEnergy:ce,idx})=>{
+    const isLast=(idx===v.length-1);
+    const hdisp=Hmin-ce;
+    const lbl=isLast?`Hdisp final= ${hdisp.toFixed(2)} m`:`Hdisp= ${hdisp.toFixed(2)} m`;
+    const useB=(idx%2===1);
+    const hdY=useB?hdRowB:hdRowA;
+    const txC=useB?C.hdispB:C.hdispA;
+    const bgC=useB?C.hdispBgB:C.hdispBgA;
+    const bw=Math.max(lbl.length*6+14,100);
+    svg+=`<rect x="${jx-bw/2}" y="${hdY-13}" width="${bw}" height="17" rx="4" fill="${bgC}"/>`;
+    svg+=`<text x="${jx}" y="${hdY}" text-anchor="middle" font-size="10" font-weight="700" fill="${txC}">${lbl}</text>`;
+    svg+=`<line x1="${jx}" y1="${pYcenter+maxPH/2}" x2="${jx}" y2="${hdY-14}" stroke="${txC}" stroke-width="1" stroke-dasharray="3,2" opacity=".5"/>`;
+  });
+
+  // ── DERIVATION ARROWS (vertical, non-overlapping) ──
+  v.forEach((t,i)=>{
+    if(i===v.length-1) return;
+    const next=v[i+1];
+    const q1ms=QUNITS[t.qu].toMs(t.caudal);
+    const q2ms=QUNITS[next.qu].toMs(next.caudal);
+    const dqms=Math.abs(q1ms-q2ms);
+    if(dqms<1e-9) return;
+    const entering=q2ms>q1ms;
+    const refU=entering?next.qu:t.qu;
+    const dqVal=dqms/QUNITS[refU].toMs(1);
+    const qLbl=`Q= ${dqVal.toFixed(2)} ${QUNITS[refU].lb}`;
+    const {jx,pY,pBot}=jxArr[i];
+    const arLen=50;
+    if(entering){
+      // vertical arrow from ABOVE DOWN into pipe top
+      svg+=`<line x1="${jx}" y1="${pY-arLen}" x2="${jx}" y2="${pY-2}" stroke="${C.arIn}" stroke-width="2" marker-end="url(#tri-dn)"/>`;
+      svg+=`<text x="${jx}" y="${pY-arLen-6}" text-anchor="middle" font-size="10" fill="${C.arIn}" font-weight="700">${qLbl}</text>`;
+    } else {
+      // vertical arrow from pipe bottom DOWN and OUT
+      svg+=`<line x1="${jx}" y1="${pBot+2}" x2="${jx}" y2="${pBot+arLen}" stroke="${C.arOut}" stroke-width="2" marker-end="url(#tri-up)"/>`;
+      svg+=`<text x="${jx}" y="${pBot+arLen+13}" text-anchor="middle" font-size="10" fill="${C.arOut}" font-weight="700">${qLbl}</text>`;
+    }
+  });
+
+  // ── TOTAL BASELINE ──
+  const bY=H-20;
+  svg+=`<line x1="${pipeStart}" y1="${bY}" x2="${W-10}" y2="${bY}" stroke="${C.tot}" stroke-width="2" stroke-dasharray="6,4"/>`;
+  svg+=`<text x="${pipeStart+(W-10-pipeStart)/2}" y="${H-6}" text-anchor="middle" font-size="10" fill="${C.totTx}" font-weight="700">Fricción: ${totalHt.toFixed(3)} m · Desnivel: ${totalDz>=0?'+':''}${totalDz.toFixed(2)} m · Presión serv.: ${pmin.toFixed(2)} m · Bomba≥ ${Hmin.toFixed(3)} m</text>`;
+
+  svg+='</svg>';
+  dw.innerHTML=svg;
+}
+
+// ─── SAVE / LOAD ─────────────────────────────────────────────────────────────
+function getState(){
+  return{
+    projName:document.getElementById('proj-name').value||'',
+    pminMca:document.getElementById('pmin-mca-in').value||'0',
+    tramos:tramos.map(t=>({
+      mat:t.mat,si:t.si,pDn:t.pDn,pPn:t.pPn,eDn:t.eDn,eSi:t.eSi,
+      eps:t.eps,largo:t.largo,dz:t.dz||0,caudal:t.caudal,qu:t.qu,
+      open:t.open,
+      fits:t.fits.map(f=>({fi:f.fi,qty:f.qty}))
+    }))
+  };
+}
+
+function restoreState(s){
+  if(s.projName!==undefined) document.getElementById('proj-name').value=s.projName;
+  if(s.pminMca!==undefined) document.getElementById('pmin-mca-in').value=s.pminMca;
+  else if(s.pminBar!==undefined) document.getElementById('pmin-mca-in').value=Math.round((parseFloat(s.pminBar)||0)*10.197);
+  tramos=[];nTid=1;nFid=1;
+  (s.tramos||[]).forEach(ts=>{
+    const t=mkTramo(null);
+    Object.assign(t,{mat:ts.mat,si:ts.si||0,pDn:ts.pDn||75,pPn:ts.pPn||10,
+      eDn:ts.eDn||110,eSi:ts.eSi||4,eps:ts.eps,largo:ts.largo||100,
+      dz:ts.dz||0,caudal:ts.caudal||10,qu:ts.qu||3,open:ts.open!==false});
+    t.fits=(ts.fits||[]).map(f=>({id:nFid++,fi:f.fi||0,qty:f.qty||1}));
+    tramos.push(t);
+  });
+  if(!tramos.length) addTramo();
+  else render();
+}
+
+function saveData(){
+  try{
+    localStorage.setItem('hcarga_save',JSON.stringify(getState()));
+    const st=document.getElementById('save-status');
+    st.textContent='✓ Guardado: '+new Date().toLocaleString();
+    st.style.color='var(--st)';
+    setTimeout(()=>st.textContent='',4000);
+  }catch(e){alert('No se pudo guardar: '+e.message);}
+}
+
+function loadData(){
+  try{
+    const saved=localStorage.getItem('hcarga_save');
+    if(!saved){alert('No hay datos guardados.');return;}
+    if(confirm('¿Cargar datos guardados? Se perderán los cambios no guardados.')){
+      restoreState(JSON.parse(saved));
+      const st=document.getElementById('save-status');
+      st.textContent='✓ Datos cargados correctamente.';
+      st.style.color='var(--it)';
+      setTimeout(()=>st.textContent='',4000);
+    }
+  }catch(e){alert('Error al cargar: '+e.message);}
+}
+
+function resetData(){
+  if(!confirm('¿Comenzar un proyecto nuevo? Se borrarán todos los datos actuales.')) return;
+  document.getElementById('proj-name').value='';
+  document.getElementById('pmin-mca-in').value='0';
+  tramos=[];nTid=1;nFid=1;
+  try{localStorage.removeItem('hcarga_autosave');}catch(e){}
+  addTramo();
+  const st=document.getElementById('save-status');
+  st.textContent='Proyecto nuevo creado.';
+  st.style.color='var(--it)';
+  setTimeout(()=>st.textContent='',3000);
+}
+
+function autoSave(){
+  try{localStorage.setItem('hcarga_autosave',JSON.stringify(getState()));}catch(e){}
+}
+
+// ─── PDF GENERATION ──────────────────────────────────────────────────────────
+let jspdfReady=false, html2canvasReady=false;
+
+function loadPdfLibs(cb){
+  if(jspdfReady&&html2canvasReady){cb();return;}
+  const st=document.getElementById('save-status');
+  st.textContent='Cargando librerías PDF...';st.style.color='var(--it)';
+  let loaded=0;
+  const done=()=>{loaded++;if(loaded===2){jspdfReady=true;html2canvasReady=true;st.textContent='';cb();}};
+  if(!jspdfReady){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload=done;document.head.appendChild(s);
+  } else done();
+  if(!html2canvasReady){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload=done;document.head.appendChild(s);
+  } else done();
+}
+
+async function generatePdf(filename){
+  const wasOpen=tramos.map(t=>t.open);
+  tramos.forEach(t=>t.open=true);
+  render();
+  await new Promise(r=>setTimeout(r,400));
+  try{
+    // Force light mode vars for capture
+    const root=document.documentElement;
+    const origStyle=root.getAttribute('style')||'';
+    root.style.setProperty('--bg','#f2f1ec');
+    root.style.setProperty('--surface','#ffffff');
+    root.style.setProperty('--surface2','#f0efea');
+    root.style.setProperty('--surface3','#e4e3dc');
+    root.style.setProperty('--tx','#1a1a18');
+    root.style.setProperty('--tx2','#5f5e5a');
+    root.style.setProperty('--tx3','#888780');
+    root.style.setProperty('--bdr','rgba(0,0,0,0.10)');
+    root.style.setProperty('--bdr2','rgba(0,0,0,0.20)');
+
+    const hideEls=[...document.querySelectorAll('.action-row,#saveload-card,#email-modal,#lead-modal,.btn-ta,.btn-dt')];
+    hideEls.forEach(e=>e.style.visibility='hidden');
+
+    // Capture header separately (for repeating)
+    const hdrEl=document.querySelector('header');
+    const hdrCanvas=await html2canvas(hdrEl,{scale:2,useCORS:true,backgroundColor:'#185FA5',logging:false});
+
+    // Capture full content area
+    const el=document.querySelector('.container');
+    const mainCanvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#f2f1ec',logging:false});
+
+    // Restore
+    root.setAttribute('style',origStyle);
+    hideEls.forEach(e=>e.style.visibility='');
+
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth();  // ~210mm
+    const pageH=pdf.internal.pageSize.getHeight(); // ~297mm
+    const mg=10;
+    const contentW=pageW-mg*2; // ~190mm
+
+    // Header dimensions in mm
+    const hdrImg=hdrCanvas.toDataURL('image/jpeg',0.95);
+    const hdrH=(hdrCanvas.height/hdrCanvas.width)*contentW; // mm
+
+    // Main content: mm per canvas pixel (scale:2 already baked into canvas dimensions)
+    const mmPerPx=contentW/mainCanvas.width;
+    const availH=pageH-mg*2-hdrH-6; // mm available per page for content
+    const sliceHpx=Math.floor(availH/mmPerPx); // canvas pixels that fit per page
+
+    let srcYpx=0, pageNum=0;
+
+    while(srcYpx<mainCanvas.height){
+      if(pageNum>0) pdf.addPage();
+
+      // Header on every page
+      pdf.addImage(hdrImg,'JPEG',mg,mg,contentW,hdrH);
+
+      // Slice the canvas for this page
+      const thisSliceHpx=Math.min(sliceHpx, mainCanvas.height-srcYpx);
+      if(thisSliceHpx<=0) break;
+
+      const slice=document.createElement('canvas');
+      slice.width=mainCanvas.width;
+      slice.height=thisSliceHpx;
+      slice.getContext('2d').drawImage(mainCanvas, 0,srcYpx, mainCanvas.width,thisSliceHpx, 0,0, mainCanvas.width,thisSliceHpx);
+
+      const sliceHmm=thisSliceHpx*mmPerPx;
+      pdf.addImage(slice.toDataURL('image/jpeg',0.88),'JPEG', mg, mg+hdrH+4, contentW, sliceHmm);
+
+      srcYpx+=thisSliceHpx;
+      pageNum++;
+    }
+
+    pdf.save(filename);
+    return true;
+  } finally {
+    tramos.forEach((t,i)=>t.open=wasOpen[i]);
+    render();
+  }
+}
+
+// ─── LEAD GATE ────────────────────────────────────────────────────────────────
+// *** IMPORTANT: Replace this URL with your deployed Google Apps Script URL ***
+const GSHEET_URL = https://script.google.com/macros/s/AKfycbyC3kYQnOEsgj8zzmKIlefq0KI9gdC1S9qS2UdBWIlGJ4bORv-_diRAQeByhQ2M4IBz/exec;
+
+let pendingAction = null; // 'print' or 'email'
+
+function getLeadData(){
+  try{
+    const d=localStorage.getItem('hcarga_lead');
+    return d?JSON.parse(d):null;
+  }catch(e){return null;}
+}
+
+function requireLead(action){
+  pendingAction=action;
+  const lead=getLeadData();
+  if(lead&&lead.name&&lead.email&&lead.phone){
+    // Lead already captured — prefill email modal if needed
+    executePendingAction(lead);
+  } else {
+    // Prefill from any existing data
+    const prev=lead||{};
+    document.getElementById('lead-name').value=prev.name||'';
+    document.getElementById('lead-company').value=prev.company||'';
+    document.getElementById('lead-phone').value=prev.phone||'';
+    document.getElementById('lead-email').value=prev.email||'';
+    document.getElementById('lead-location').value=prev.location||'';
+    document.getElementById('lead-err').style.display='none';
+    document.getElementById('lead-progress').style.display='none';
+    document.getElementById('btn-lead-submit').disabled=false;
+    document.getElementById('btn-lead-submit').textContent='Continuar';
+    document.getElementById('lead-modal').style.display='flex';
+  }
+}
+
+async function submitLead(){
+  const name=document.getElementById('lead-name').value.trim();
+  const company=document.getElementById('lead-company').value.trim();
+  const phone=document.getElementById('lead-phone').value.trim();
+  const email=document.getElementById('lead-email').value.trim();
+  const location=document.getElementById('lead-location').value.trim();
+  const errEl=document.getElementById('lead-err');
+  // Validate required fields
+  if(!name){errEl.textContent='Ingresá tu nombre.';errEl.style.display='block';return;}
+  if(!phone){errEl.textContent='Ingresá tu teléfono.';errEl.style.display='block';return;}
+  if(!email||!email.includes('@')){errEl.textContent='Ingresá un correo válido.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const lead={name,company,phone,email,location};
+  const projName=document.getElementById('proj-name').value||'Sin nombre';
+  const btn=document.getElementById('btn-lead-submit');
+  const prog=document.getElementById('lead-progress');
+  btn.disabled=true;btn.textContent='Enviando...';
+  prog.style.display='block';
+
+  // Save locally regardless of sheet success
+  try{localStorage.setItem('hcarga_lead',JSON.stringify(lead));}catch(e){}
+
+  // Send to Google Sheet (fire and forget — don't block if it fails)
+  try{
+    if(GSHEET_URL&&!GSHEET_URL.startsWith('PEGAR')){
+      await fetch(GSHEET_URL,{
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          timestamp:new Date().toISOString(),
+          nombre:name,
+          empresa:company,
+          telefono:phone,
+          email:email,
+          ubicacion:location,
+          proyecto:projName,
+          app:'Calculadora Pérdidas Hidráulicas'
+        })
+      });
+    }
+  }catch(e){
+    // silently continue — don't block the user
+    console.log('Sheet send failed:',e);
+  }
+
+  prog.style.display='none';
+  document.getElementById('lead-modal').style.display='none';
+  btn.disabled=false;btn.textContent='Continuar';
+
+  executePendingAction(lead);
+}
+
+function executePendingAction(lead){
+  if(pendingAction==='print'){
+    printCalc();
+  } else if(pendingAction==='email'){
+    // Prefill email modal with lead email
+    document.getElementById('mail-user').value=lead.email||'';
+    showEmailModal();
+  }
+  pendingAction=null;
+}
+
+// ─── PRINT ────────────────────────────────────────────────────────────────────
+function printCalc(){
+  window.print();
+}
+
+// ─── EMAIL ────────────────────────────────────────────────────────────────────
+function showEmailModal(){document.getElementById('email-modal').style.display='flex';}
+
+function buildEmailBody(){
+  const s=getState();
+  const proj=s.projName||'Sin nombre';
+  const v=tramos.filter(t=>t.res);
+  const totalHt=v.reduce((s,t)=>s+t.res.ht,0);
+  const totalDz=tramos.reduce((s,t)=>s+(t.dz||0),0);
+  const pmin=getPminMca();
+  const Hmin=totalHt+totalDz+pmin;
+  const ML={acero:'Acero',pvc:'PVC',pe:'Polietileno'};
+  const msg=document.getElementById('mail-msg').value.trim();
+  let body=`CALCULADORA DE PÉRDIDAS HIDRÁULICAS - AGRARIA\n`;
+  body+=`======================================================\n`;
+  body+=`Proyecto: ${proj}\n`;
+  body+=`Fecha: ${new Date().toLocaleString()}\n`;
+  if(msg) body+=`Mensaje: ${msg}\n`;
+  body+=`\nRESULTADOS POR TRAMO:\n`;
+  v.forEach((t,i)=>{
+    const r=t.res;
+    body+=`\n  Tramo ${i+1}: ${ML[t.mat]} DN${r.p.de}mm · ${t.largo}m · ${t.caudal} ${QUNITS[t.qu].lb}\n`;
+    body+=`    Velocidad: ${r.V.toFixed(3)} m/s | Pérdida: ${r.ht.toFixed(3)} m c.a. | Desnivel: ${t.dz||0} m\n`;
+  });
+  body+=`\nRESUMEN DE BOMBA:\n`;
+  body+=`  Pérdida fricción total: ${totalHt.toFixed(3)} m c.a.\n`;
+  body+=`  Desnivel total: ${(totalDz>=0?'+':'')+totalDz.toFixed(2)} m\n`;
+  body+=`  Presión mínima servicio: ${pmin} m c.a. (${(pmin/10.197).toFixed(2)} bar)\n`;
+  body+=`  Carga mínima de la bomba: ${Hmin.toFixed(3)} m c.a.\n`;
+  body+=`  Caudal Tramo 1: ${tramos[0].caudal} ${QUNITS[tramos[0].qu].lb}\n`;
+  body+=`\n------------------------------------------------------\n`;
+  body+=`Adjunto: PDF con el cálculo completo.\n\n`;
+  body+=`Calculado con la Calculadora de Pérdidas Hidráulicas de AGRARIA\n`;
+  body+=`www.agraria.com.uy\n`;
+  return body;
+}
+
+async function sendEmail(){
+  const userEmail=document.getElementById('mail-user').value.trim();
+  if(!userEmail||!userEmail.includes('@')){alert('Ingresá un correo válido.');return;}
+  const btn=document.getElementById('btn-send-mail');
+  const prog=document.getElementById('pdf-progress');
+  btn.disabled=true;btn.textContent='Generando...';
+  prog.style.display='block';
+  try{
+    await new Promise((res,rej)=>{
+      loadPdfLibs(()=>{res();});
+      setTimeout(()=>rej(new Error('timeout')),15000);
+    });
+    const s=getState();
+    const proj=(s.projName||'calculo-hidraulico').replace(/\s+/g,'-').toLowerCase();
+    const filename=`${proj}-agraria.pdf`;
+    prog.textContent='Generando PDF... puede tardar unos segundos.';
+    await generatePdf(filename);
+    prog.textContent='✓ PDF descargado. Abriendo cliente de correo...';
+    await new Promise(r=>setTimeout(r,1200));
+    const subj=`Cálculo hidráulico: ${s.projName||'Sin nombre'}`;
+    const body=buildEmailBody();
+    const agrMail='jroca@agraria.com.uy';
+    window.location.href=`mailto:${userEmail}?cc=${encodeURIComponent(agrMail)}&subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    document.getElementById('email-modal').style.display='none';
+  } catch(e){
+    prog.textContent='';
+    alert('No se pudo generar el PDF. Podés usar "Imprimir PDF" para guardarlo manualmente.\n\nError: '+e.message);
+  } finally {
+    btn.disabled=false;btn.textContent='Generar PDF y Enviar';
+    prog.style.display='none';
+  }
+}
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>

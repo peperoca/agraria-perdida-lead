@@ -129,7 +129,7 @@ header{background:var(--blue);padding:calc(env(safe-area-inset-top,0px)+10px) 14
 @media print{
   header{position:fixed;top:0;left:0;right:0;z-index:999;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .hbtn{display:none!important;}
-  .btn-ta,.action-row,#saveload-card,.thdr button,.btn-dt,#lead-modal,#email-modal{display:none!important;}
+  .btn-ta,.action-row,#saveload-card,.thdr button,.btn-dt{display:none!important;}
   body{background:#fff;color:#000;padding:0;margin:0;}
   .container{max-width:100%;padding:8px;margin-top:80px;}
   .card,.tramo{break-inside:avoid;border:1px solid #ccc!important;background:#fff!important;}
@@ -231,24 +231,20 @@ header{background:var(--blue);padding:calc(env(safe-area-inset-top,0px)+10px) 14
 <!-- LEAD CAPTURE MODAL -->
 <div id="lead-modal" class="modal-backdrop" style="display:none;">
   <div class="modal">
-    <h3>Completá tus datos</h3>
-    <p style="font-size:12px;color:var(--tx2);margin-bottom:12px;line-height:1.5;">Para imprimir o enviar el informe, necesitamos algunos datos de contacto.</p>
-    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Nombre completo *</label>
-    <input type="text" id="lead-name" placeholder="Ej: Juan Pérez">
-    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Empresa / Establecimiento</label>
-    <input type="text" id="lead-company" placeholder="Ej: Estancia La Magdalena">
-    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Teléfono / WhatsApp *</label>
-    <input type="tel" id="lead-phone" placeholder="Ej: 099 123 456">
-    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Correo electrónico *</label>
+    <h3>Completá tus datos para continuar</h3>
+    <p style="font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.5;">Necesitamos algunos datos antes de generar el informe. Solo te los pedimos una vez.</p>
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Nombre *</label>
+    <input type="text" id="lead-nombre" placeholder="Tu nombre completo">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Empresa</label>
+    <input type="text" id="lead-empresa" placeholder="Nombre de tu empresa (opcional)">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Email *</label>
     <input type="email" id="lead-email" placeholder="tu@correo.com">
-    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Departamento / Ubicación</label>
-    <input type="text" id="lead-location" placeholder="Ej: San José">
-    <div id="lead-err" style="display:none;font-size:12px;color:var(--dt);margin:8px 0;"></div>
-    <div id="lead-progress" style="display:none;margin:8px 0;background:var(--ib);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--it);">Enviando datos...</div>
-    <p style="font-size:10px;color:var(--tx3);margin:8px 0 10px;line-height:1.5;">Tus datos se usan exclusivamente para contactarte sobre soluciones de riego. No los compartimos con terceros.</p>
-    <div class="modal-btns">
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Teléfono</label>
+    <input type="tel" id="lead-tel" placeholder="+598 99 123 456 (opcional)">
+    <div id="lead-err" style="display:none;font-size:11px;color:var(--dt);margin-top:6px;"></div>
+    <div class="modal-btns" style="margin-top:12px;">
       <button class="mbtn mbtn-cancel" onclick="document.getElementById('lead-modal').style.display='none'">Cancelar</button>
-      <button class="mbtn mbtn-ok" id="btn-lead-submit" onclick="submitLead()">Continuar</button>
+      <button class="mbtn mbtn-ok" id="btn-lead-ok" onclick="submitLead()">Continuar</button>
     </div>
   </div>
 </div>
@@ -257,7 +253,7 @@ header{background:var(--blue);padding:calc(env(safe-area-inset-top,0px)+10px) 14
 <div id="email-modal" class="modal-backdrop" style="display:none;">
   <div class="modal">
     <h3>Enviar informe por mail</h3>
-    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Tu dirección de correo</label>
+    <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Dirección de correo destino</label>
     <input type="email" id="mail-user" placeholder="tu@correo.com">
     <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px;">Mensaje adicional (opcional)</label>
     <input type="text" id="mail-msg" placeholder="Ej: Consulta proyecto X">
@@ -925,7 +921,7 @@ async function generatePdf(filename){
     root.style.setProperty('--bdr','rgba(0,0,0,0.10)');
     root.style.setProperty('--bdr2','rgba(0,0,0,0.20)');
 
-    const hideEls=[...document.querySelectorAll('.action-row,#saveload-card,#email-modal,#lead-modal,.btn-ta,.btn-dt')];
+    const hideEls=[...document.querySelectorAll('.action-row,#saveload-card,#email-modal,.btn-ta,.btn-dt')];
     hideEls.forEach(e=>e.style.visibility='hidden');
 
     // Capture header separately (for repeating)
@@ -988,102 +984,71 @@ async function generatePdf(filename){
   }
 }
 
-// ─── LEAD GATE ────────────────────────────────────────────────────────────────
-// *** IMPORTANT: Replace this URL with your deployed Google Apps Script URL ***
-const GSHEET_URL = https://script.google.com/macros/s/AKfycbyC3kYQnOEsgj8zzmKIlefq0KI9gdC1S9qS2UdBWIlGJ4bORv-_diRAQeByhQ2M4IBz/exec;
-
-let pendingAction = null; // 'print' or 'email'
+// ─── LEAD CAPTURE ────────────────────────────────────────────────────────────
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbw2kc4LeP-hsIl_3S3249IByaiiLuMsTnr_WD3XaXeBA1l8_notVMSuZxcTI6rN7PS9/exec';
+let pendingAction=null; // 'print' or 'email'
 
 function getLeadData(){
-  try{
-    const d=localStorage.getItem('hcarga_lead');
-    return d?JSON.parse(d):null;
-  }catch(e){return null;}
+  try{ const d=sessionStorage.getItem('hcarga_lead'); return d?JSON.parse(d):null; }catch(e){return null;}
+}
+function setLeadData(d){
+  try{ sessionStorage.setItem('hcarga_lead',JSON.stringify(d)); }catch(e){}
 }
 
 function requireLead(action){
   pendingAction=action;
-  const lead=getLeadData();
-  if(lead&&lead.name&&lead.email&&lead.phone){
-    // Lead already captured — prefill email modal if needed
-    executePendingAction(lead);
-  } else {
-    // Prefill from any existing data
-    const prev=lead||{};
-    document.getElementById('lead-name').value=prev.name||'';
-    document.getElementById('lead-company').value=prev.company||'';
-    document.getElementById('lead-phone').value=prev.phone||'';
-    document.getElementById('lead-email').value=prev.email||'';
-    document.getElementById('lead-location').value=prev.location||'';
-    document.getElementById('lead-err').style.display='none';
-    document.getElementById('lead-progress').style.display='none';
-    document.getElementById('btn-lead-submit').disabled=false;
-    document.getElementById('btn-lead-submit').textContent='Continuar';
-    document.getElementById('lead-modal').style.display='flex';
+  const existing=getLeadData();
+  if(existing){
+    // Already captured this session — proceed directly
+    executePendingAction();
+    return;
   }
+  // Pre-fill email from lead if available
+  const projName=document.getElementById('proj-name').value||'';
+  document.getElementById('lead-nombre').value='';
+  document.getElementById('lead-empresa').value='';
+  document.getElementById('lead-email').value='';
+  document.getElementById('lead-tel').value='';
+  document.getElementById('lead-err').style.display='none';
+  document.getElementById('lead-modal').style.display='flex';
 }
 
-async function submitLead(){
-  const name=document.getElementById('lead-name').value.trim();
-  const company=document.getElementById('lead-company').value.trim();
-  const phone=document.getElementById('lead-phone').value.trim();
+function submitLead(){
+  const nombre=document.getElementById('lead-nombre').value.trim();
+  const empresa=document.getElementById('lead-empresa').value.trim();
   const email=document.getElementById('lead-email').value.trim();
-  const location=document.getElementById('lead-location').value.trim();
+  const tel=document.getElementById('lead-tel').value.trim();
   const errEl=document.getElementById('lead-err');
-  // Validate required fields
-  if(!name){errEl.textContent='Ingresá tu nombre.';errEl.style.display='block';return;}
-  if(!phone){errEl.textContent='Ingresá tu teléfono.';errEl.style.display='block';return;}
-  if(!email||!email.includes('@')){errEl.textContent='Ingresá un correo válido.';errEl.style.display='block';return;}
+
+  if(!nombre){errEl.textContent='Ingresá tu nombre.';errEl.style.display='block';return;}
+  if(!email||!email.includes('@')){errEl.textContent='Ingresá un email válido.';errEl.style.display='block';return;}
   errEl.style.display='none';
 
-  const lead={name,company,phone,email,location};
-  const projName=document.getElementById('proj-name').value||'Sin nombre';
-  const btn=document.getElementById('btn-lead-submit');
-  const prog=document.getElementById('lead-progress');
-  btn.disabled=true;btn.textContent='Enviando...';
-  prog.style.display='block';
+  const lead={nombre,empresa,email,telefono:tel,proyecto:document.getElementById('proj-name').value||''};
+  setLeadData(lead);
 
-  // Save locally regardless of sheet success
-  try{localStorage.setItem('hcarga_lead',JSON.stringify(lead));}catch(e){}
-
-  // Send to Google Sheet (fire and forget — don't block if it fails)
+  // Send to Google Sheets in background (fire and forget)
   try{
-    if(GSHEET_URL&&!GSHEET_URL.startsWith('PEGAR')){
-      await fetch(GSHEET_URL,{
-        method:'POST',
-        mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          timestamp:new Date().toISOString(),
-          nombre:name,
-          empresa:company,
-          telefono:phone,
-          email:email,
-          ubicacion:location,
-          proyecto:projName,
-          app:'Calculadora Pérdidas Hidráulicas'
-        })
-      });
-    }
-  }catch(e){
-    // silently continue — don't block the user
-    console.log('Sheet send failed:',e);
-  }
+    fetch(SHEETS_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(lead)
+    });
+  }catch(e){}
 
-  prog.style.display='none';
   document.getElementById('lead-modal').style.display='none';
-  btn.disabled=false;btn.textContent='Continuar';
-
-  executePendingAction(lead);
+  executePendingAction();
 }
 
-function executePendingAction(lead){
-  if(pendingAction==='print'){
-    printCalc();
-  } else if(pendingAction==='email'){
-    // Prefill email modal with lead email
-    document.getElementById('mail-user').value=lead.email||'';
+function executePendingAction(){
+  const lead=getLeadData();
+  if(pendingAction==='email'){
+    // Pre-fill email modal with lead email
+    if(lead&&lead.email) document.getElementById('mail-user').value=lead.email;
     showEmailModal();
+  } else if(pendingAction==='print'){
+    printCalc();
   }
   pendingAction=null;
 }

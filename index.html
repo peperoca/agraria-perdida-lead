@@ -109,6 +109,11 @@ header{background:var(--blue);padding:calc(env(safe-area-inset-top,0px)+10px) 14
 #diag-wrap{overflow-x:auto;margin-top:4px;}
 .emsg{font-size:13px;color:var(--tx3);text-align:center;padding:16px 0;}
 .errmsg{font-size:13px;color:var(--dt);background:var(--db);border-radius:var(--r);padding:10px 14px;margin-top:8px;}
+.dz-toggle{display:flex;border-radius:var(--r);overflow:hidden;border:.5px solid var(--bdr2);flex-shrink:0;height:38px;}
+.dz-toggle button{width:44px;border:none;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--surface2);color:var(--tx3);transition:background .12s,color .12s;}
+.dz-toggle button:active{opacity:.7;}
+.dz-toggle button.sel-up{background:var(--db);color:var(--dt);}
+.dz-toggle button.sel-dn{background:var(--sb);color:var(--st);}
 /* action buttons */
 .action-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
 .abtn{flex:1;min-width:120px;padding:12px 10px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;}
@@ -380,6 +385,18 @@ function chQty(tid,fid,d){const t=tramos.find(t=>t.id===tid);if(!t)return;const 
 function chFi(tid,fid,v){const t=tramos.find(t=>t.id===tid);if(!t)return;const f=t.fits.find(f=>f.id===fid);if(f)f.fi=parseInt(v);render();}
 function sv(id,k,v){const t=tramos.find(t=>t.id===id);if(t)t[k]=v;render();}
 function svMat(id,mat){const t=tramos.find(t=>t.id===id);if(t){t.mat=mat;t.eps=DEFAULT_EPS[mat];}render();}
+function setDzSign(id,sign){
+  const t=tramos.find(t=>t.id===id);
+  if(t) t.dz=Math.abs(t.dz||0)*sign;
+  render();
+}
+function setDzAbs(id,val){
+  const t=tramos.find(t=>t.id===id);
+  if(!t) return;
+  const sign=(t.dz||0)<0?-1:1;
+  t.dz=Math.abs(val)*sign;
+  render();
+}
 
 // ─── PIPE GETTERS ─────────────────────────────────────────────────────────────
 function getPipe(t){
@@ -513,9 +530,8 @@ function rPipe(t){
 
 function rLC(t){
   const dz=t.dz||0;
-  const dzSign=dz>0?'↑ Sube: +':dz<0?'↓ Baja: ':'';
-  const dzColor=dz>0?'var(--dt)':dz<0?'var(--st)':'var(--tx3)';
-  const dzNote=dz!==0?`<span style="font-size:12px;font-weight:600;color:${dzColor};white-space:nowrap;">${dzSign}${dz} m</span>`:'';
+  const absVal=Math.abs(dz);
+  const isUp=dz>=0;
   return`<div class="sec">Caudal, longitud y desnivel</div>
   <div class="g3">
     <div class="fld"><label>Longitud</label>
@@ -531,11 +547,17 @@ function rLC(t){
       </select></div>
   </div>
   <div class="fld" style="margin-top:10px;">
-    <label>Dif. de altura fin−inicio (+ sube, − baja)</label>
+    <label>Dif. de altura del tramo (fin − inicio)</label>
     <div style="display:flex;align-items:center;gap:8px;">
-      <input type="number" value="${dz}" step="0.1" inputmode="decimal" style="flex:1;"
-        onchange="sv(${t.id},'dz',parseFloat(this.value)||0)">
-      <span class="un">m</span>${dzNote}
+      <div class="dz-toggle">
+        <button onclick="setDzSign(${t.id},1)" class="${isUp?'sel-up':''}">↑</button>
+        <button onclick="setDzSign(${t.id},-1)" class="${!isUp?'sel-dn':''}">↓</button>
+      </div>
+      <input type="number" value="${absVal}" min="0" step="1" inputmode="numeric" style="flex:1;"
+        id="dz-abs-${t.id}"
+        onchange="setDzAbs(${t.id},parseFloat(this.value)||0)">
+      <span class="un">m</span>
+      <span style="font-size:12px;font-weight:600;color:${isUp?'var(--dt)':'var(--st)'};white-space:nowrap;">${dz!==0?(isUp?'↑ Sube':'↓ Baja'):''}</span>
     </div>
   </div>`;
 }
